@@ -6,15 +6,23 @@ env:
   GRADLE_CACHE_LOCAL: false
   GRADLE_CACHE_REMOTE: true
   BUILDLESS_APIKEY: ${{ secrets.BUILDLESS_APIKEY }}
+permissions:
+  contents: read
+
 jobs:
   build:
     name: Build and test
     runs-on: ubuntu-latest
     steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@eb238b55efaa70779f274895e782ed17c84f2895 # v2.6.1
+        with:
+          egress-policy: audit
+
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@ee0669bd1cc54295c223e0bb666b733df41de1c5 # v2.7.0
       - name: Configure JDK
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@0ab4596768b603586c0de567f2430c30f5b0d2b0 # v3.13.0
         with:
           distribution: 'temurin'
           java-version: 19
@@ -23,7 +31,7 @@ jobs:
       - name: Setup MySQL
         run: sudo mysql/setup.sh
       - name: Setup Gradle
-        uses: gradle/gradle-build-action@v2
+        uses: gradle/gradle-build-action@87a9a15658c426a54dd469d4fc7dc1a73ca9d4a6 # v2.10.0
       - name: Gradle check
         run: ./gradlew check --scan
 
